@@ -16,6 +16,8 @@ import useToggleState from "../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../utils/error-messages"
 import EditProductPage from "./edit"
 import NewProductPage from "./new"
+import UploadIcon from "../../components/fundamentals/icons/upload-icon"
+import ImportProducts from "./batch-job/import"
 
 const VIEWS = ["products", "collections"]
 
@@ -56,6 +58,14 @@ const ProductIndex = () => {
             <Button
               variant="secondary"
               size="small"
+              onClick={() => openImportModal()}
+            >
+              <UploadIcon size={20} />
+              Import Products
+            </Button>
+            <Button
+              variant="secondary"
+              size="small"
               onClick={() => openExportModal()}
             >
               <ExportIcon size={20} />
@@ -92,6 +102,12 @@ const ProductIndex = () => {
     open: openExportModal,
     close: closeExportModal,
     state: exportModalOpen,
+  } = useToggleState(false)
+
+  const {
+    open: openImportModal,
+    close: closeImportModal,
+    state: importModalOpen,
   } = useToggleState(false)
 
   const handleCreateCollection = async (data, colMetadata) => {
@@ -166,6 +182,12 @@ const ProductIndex = () => {
           handleClose={() => closeExportModal()}
           onSubmit={handleCreateExport}
           loading={createBatchJob.isLoading}
+        />
+      )}
+      {importModalOpen && (
+        <ImportProducts
+          handleClose={() => closeImportModal()}
+          isModalOpen={importModalOpen}
         />
       )}
     </>
