@@ -1,6 +1,6 @@
 import { QueryClient } from "react-query"
 
-let medusaUrl = "http://localhost:9000"
+let medusaUrl = "https://totemiq-store-core.internal.minsky.cc" // "http://localhost:9000"
 
 // deprecated
 if (process.env.GATSBY_STORE_URL) {
