@@ -13,8 +13,10 @@ RUN npm install
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY . .
+COPY . . 
+
+RUN npm build
 
 EXPOSE 7000
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "serve" ]
