@@ -23,67 +23,93 @@ const Actionables: React.FC<ActionablesProps> = ({
   customTrigger,
   forceDropdown = false,
 }) => {
-  if (!actions?.length && !customTrigger) {
-    return null
+  if (actions && (forceDropdown || actions.length > 1)) {
+    return (
+      <div>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            {!customTrigger ? (
+              <Button
+                variant="ghost"
+                size="small"
+                className="w-xlarge h-xlarge focus-visible:outline-none focus-visible:shadow-input focus-visible:border-violet-60 focus:shadow-none"
+              >
+                <MoreHorizontalIcon size={20} />
+              </Button>
+            ) : (
+              customTrigger
+            )}
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Content
+            sideOffset={5}
+            className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown p-xsmall min-w-[200px] z-30"
+          >
+            {actions.map((action, i) => {
+              return (
+                <DropdownMenu.Item className="mb-1 last:mb-0" key={i}>
+                  {
+                    <Button
+                      variant="ghost"
+                      size="small"
+                      className={clsx("w-full justify-start flex", {
+                        "text-rose-50": action?.variant === "danger",
+                        "opacity-50 select-none pointer-events-none":
+                          action?.disabled,
+                      })}
+                      onClick={action?.onClick}
+                    >
+                      {action.icon}
+                      {action.label}
+                    </Button>
+                  }
+                </DropdownMenu.Item>
+              )
+            })}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+    )
   }
 
-  return actions?.length > 1 || forceDropdown ? (
-    <div>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          {!customTrigger ? (
-            <Button
-              variant="ghost"
-              size="small"
-              className="w-xlarge h-xlarge focus-visible:outline-none focus-visible:shadow-input focus-visible:border-violet-60 focus:shadow-none"
-            >
-              <MoreHorizontalIcon size={20} />
-            </Button>
-          ) : (
-            customTrigger
-          )}
-        </DropdownMenu.Trigger>
+  if (customTrigger) {
+    const triggers = Array.isArray(customTrigger)
+      ? customTrigger
+      : [customTrigger]
+    return (
+      <div>
+        {triggers.map((trigger, i) => (
+          <div key={i}>{trigger}</div>
+        ))}
+      </div>
+    )
+  }
 
-        <DropdownMenu.Content
-          sideOffset={5}
-          className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown p-xsmall min-w-[200px] z-30"
+  const [action] = actions ?? []
+  if (action) {
+    return (
+      <div>
+        <Button
+          variant="secondary"
+          size="small"
+          type="button"
+          className="flex items-center"
+          onClick={action.onClick}
         >
-          {actions.map((action, i) => {
-            return (
-              <DropdownMenu.Item className="mb-1 last:mb-0" key={i}>
-                {
-                  <Button
-                    variant="ghost"
-                    size="small"
-                    className={clsx("w-full justify-start", {
-                      "text-rose-50": action?.variant === "danger",
-                      "opacity-50 select-none pointer-events-none":
-                        action?.disabled,
-                    })}
-                    onClick={action?.onClick}
-                  >
-                    {action.icon}
-                    {action.label}
-                  </Button>
-                }
-              </DropdownMenu.Item>
-            )
-          })}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
-    </div>
-  ) : (
-    <div>
-      {customTrigger ? (
-        <div>{customTrigger}</div>
-      ) : (
-        <Button variant="ghost" size="small" onClick={actions[0].onClick}>
-          {actions[0].icon}
-          {actions[0].label}
+          {action.icon ? (
+            <div className="flex items-center gap-x-2xsmall">
+              {action.icon}
+              {action.label}
+            </div>
+          ) : (
+            <>{action.label}</>
+          )}
         </Button>
-      )}
-    </div>
-  )
+      </div>
+    )
+  }
+
+  return null
 }
 
 export default Actionables

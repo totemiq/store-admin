@@ -49,7 +49,7 @@ const Topbar: React.FC = () => {
         <NotificationBell
           onClick={toggleActivityDrawer}
           variant={"ghost"}
-          hasNotifications={!!batchJobs}
+          hasNotifications={!!batchJobs?.length}
         />
 
         <div className="ml-large w-large h-large">
@@ -91,7 +91,10 @@ const Topbar: React.FC = () => {
         </div>
       </div>
       {showSupportform && (
-        <MailDialog onDismiss={() => setShowSupportForm(false)} />
+        <MailDialog
+          open={showSupportform}
+          onClose={() => setShowSupportForm(false)}
+        />
       )}
       {activityDrawerState && (
         <ActivityDrawer onDismiss={activityDrawerClose} />

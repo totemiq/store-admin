@@ -145,28 +145,24 @@ const InvitePage = ({ location }) => {
                     </span>
                     <SigninInput
                       placeholder="First name"
-                      name="first_name"
-                      ref={register({ required: true })}
+                      {...register("first_name", { required: true })}
                       autoComplete="given-name"
                     />
                     <SigninInput
                       placeholder="Last name"
-                      name="last_name"
-                      ref={register({ required: true })}
+                      {...register("last_name", { required: true })}
                       autoComplete="family-name"
                     />
                     <SigninInput
                       placeholder="Password"
                       type={"password"}
-                      name="password"
-                      ref={register({ required: true })}
+                      {...register("password", { required: true })}
                       autoComplete="new-password"
                     />
                     <SigninInput
                       placeholder="Repeat password"
                       type={"password"}
-                      name="repeat_password"
-                      ref={register({ required: true })}
+                      {...register("repeat_password", { required: true })}
                       autoComplete="new-password"
                     />
                     {passwordMismatch && (

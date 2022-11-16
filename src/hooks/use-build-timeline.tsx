@@ -1,10 +1,12 @@
-import { Return, Swap } from "@medusajs/medusa"
+import { OrderEdit, Return, Swap } from "@medusajs/medusa"
 import {
   useAdminNotes,
   useAdminNotifications,
   useAdminOrder,
+  useAdminOrderEdits,
 } from "medusa-react"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
+import { FeatureFlagContext } from "../context/feature-flag"
 
 export interface TimelineEvent {
   id: string
@@ -22,11 +24,33 @@ export interface TimelineEvent {
     | "fulfilled"
     | "canceled"
     | "return"
+    | "refund"
     | "exchange"
     | "exchange_fulfilled"
-    | "notification"
     | "claim"
-    | "refund"
+    | "edit-created"
+    | "edit-requested"
+    | "edit-declined"
+    | "edit-canceled"
+    | "edit-confirmed"
+    | "payment-required"
+    | "refund-required"
+}
+
+export interface RefundRequiredEvent extends TimelineEvent {
+  currency_code: string
+}
+
+export interface PaymentRequiredEvent extends TimelineEvent {
+  currency_code: string
+}
+
+export interface OrderEditEvent extends TimelineEvent {
+  edit: OrderEdit
+}
+
+export interface OrderEditRequestedEvent extends OrderEditEvent {
+  email: string
 }
 
 interface CancelableEvent {
@@ -98,7 +122,7 @@ export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
   fulfillmentStatus: string
   returnStatus: string
   returnId: string
-  returnItems: ReturnItem[]
+  returnItems: (ReturnItem | undefined)[]
   newItems: OrderItem[]
   exchangeCartId?: string
   raw: Swap
@@ -121,18 +145,22 @@ export interface NotificationEvent extends TimelineEvent {
   title: string
 }
 
-export const useBuildTimelime = (orderId: string) => {
+export const useBuildTimeline = (orderId: string) => {
   const {
     order,
     isLoading: orderLoading,
     isError: orderError,
     refetch,
-  } = useAdminOrder(orderId)
+  } = useAdminOrder(orderId, {})
+
+  const { order_edits: edits } = useAdminOrderEdits({ order_id: orderId })
+
   const {
     notes,
     isLoading: notesLoading,
     isError: notesError,
   } = useAdminNotes({ resource_id: orderId, limit: 100, offset: 0 })
+
   const {
     notifications,
     isLoading: notificationsLoading,
@@ -140,6 +168,8 @@ export const useBuildTimelime = (orderId: string) => {
   } = useAdminNotifications({ resource_id: orderId })
 
   const events: TimelineEvent[] | undefined = useMemo(() => {
+    const { isFeatureEnabled } = useContext(FeatureFlagContext)
+
     if (!order) {
       return undefined
     }
@@ -159,6 +189,78 @@ export const useBuildTimelime = (orderId: string) => {
     }
 
     const events: TimelineEvent[] = []
+
+    events.push({
+      id: "refund-event",
+      time: new Date(),
+      orderId: order.id,
+      type: "refund-required",
+      currency_code: order.currency_code,
+    } as RefundRequiredEvent)
+
+    events.push({
+      id: "payment-required",
+      time: new Date(),
+      orderId: order.id,
+      type: "payment-required",
+      currency_code: order.currency_code,
+    } as PaymentRequiredEvent)
+
+    if (isFeatureEnabled("order_editing")) {
+      for (const edit of edits || []) {
+        events.push({
+          id: edit.id,
+          time: edit.created_at,
+          orderId: order.id,
+          type: "edit-created",
+          edit: edit,
+        } as OrderEditEvent)
+
+        if (edit.requested_at) {
+          events.push({
+            id: edit.id,
+            time: edit.requested_at,
+            orderId: order.id,
+            type: "edit-requested",
+            email: order.email,
+            edit: edit,
+          } as OrderEditRequestedEvent)
+        }
+
+        // // declined
+        if (edit.declined_at) {
+          events.push({
+            id: edit.id,
+            time: edit.declined_at,
+            orderId: order.id,
+            type: "edit-declined",
+            edit: edit,
+          } as OrderEditEvent)
+        }
+
+        // // canceled
+        if (edit.canceled_at) {
+          events.push({
+            id: edit.id,
+            time: edit.canceled_at,
+            orderId: order.id,
+            type: "edit-canceled",
+            edit: edit,
+          } as OrderEditEvent)
+        }
+
+        // confirmed
+        if (edit.confirmed_at) {
+          events.push({
+            id: edit.id,
+            time: edit.confirmed_at,
+            orderId: order.id,
+            type: "edit-confirmed",
+            edit: edit,
+          } as OrderEditEvent)
+        }
+      }
+    }
 
     events.push({
       id: `${order.id}-placed`,
@@ -413,6 +515,7 @@ export const useBuildTimelime = (orderId: string) => {
     return events
   }, [
     order,
+    edits,
     orderLoading,
     orderError,
     notes,

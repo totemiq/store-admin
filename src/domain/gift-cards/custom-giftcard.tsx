@@ -5,7 +5,7 @@ import Button from "../../components/fundamentals/button"
 import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
 import Select from "../../components/molecules/select"
-import Textarea from "../../components/molecules/textarea"
+import TextArea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -25,7 +25,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
   const notification = useNotification()
 
-  const createGiftCard = useAdminCreateGiftCard()
+  const { mutate, isLoading: isSubmitting } = useAdminCreateGiftCard()
 
   useEffect(() => {
     if (!isLoading) {
@@ -57,7 +57,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
       ...data,
     }
 
-    createGiftCard.mutate(update, {
+    mutate(update, {
       onSuccess: () => {
         notification("Success", "Created Custom Gift Card", "success")
         onDismiss()
@@ -93,7 +93,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                 />
               </div>
               <div className="w-[415px]">
-                <CurrencyInput
+                <CurrencyInput.Root
                   size="medium"
                   currencyCodes={
                     isLoading ? undefined : regions?.map((r) => r.currency_code)
@@ -101,7 +101,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                   readOnly
                   currentCurrency={selectedRegion?.value?.currency_code}
                 >
-                  <CurrencyInput.AmountInput
+                  <CurrencyInput.Amount
                     label={"Amount"}
                     amount={giftCardAmount}
                     onChange={(value) => {
@@ -110,7 +110,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                     name="amount"
                     required={true}
                   />
-                </CurrencyInput>
+                </CurrencyInput.Root>
               </div>
             </div>
           </div>
@@ -120,17 +120,15 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
               <InputField
                 label={"Email"}
                 required
-                name="metadata.email"
+                {...register("metadata.email", { required: true })}
                 placeholder="lebron@james.com"
                 type="email"
-                ref={register({ required: true })}
               />
-              <Textarea
+              <TextArea
                 label={"Personal Message"}
                 rows={7}
                 placeholder="Something nice to someone special"
-                name="metadata.personal_message"
-                ref={register()}
+                {...register("metadata.personal_message")}
               />
             </div>
           </div>
@@ -151,6 +149,8 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
               onClick={handleSubmit(onSubmit)}
               size="small"
               className="w-[112px]"
+              disabled={isSubmitting}
+              loading={isSubmitting}
             >
               Create & Send
             </Button>

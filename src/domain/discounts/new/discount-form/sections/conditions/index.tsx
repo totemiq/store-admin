@@ -6,12 +6,14 @@ import AddConditionsModal from "../../add-conditions-modal"
 import { useDiscountForm } from "../../form/discount-form-context"
 import ConditionItem from "./condition-item"
 
-type ConditionsProps = {
+type DiscountNewConditionsProps = {
   discount?: Discount
 }
 
-const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
-  const { setConditions, conditions, updateCondition } = useDiscountForm()
+const DiscountNewConditions: React.FC<DiscountNewConditionsProps> = ({
+  discount,
+}) => {
+  const { setConditions, conditions } = useDiscountForm()
   const [showConditionsModal, setShowConditionsModal] = useState(false)
 
   useEffect(() => {
@@ -73,11 +75,10 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
         <AddConditionsModal
           onClose={() => setShowConditionsModal(false)}
           conditions={conditions}
-          updateCondition={updateCondition}
         />
       )}
     </div>
   )
 }
 
-export default Conditions
+export default DiscountNewConditions

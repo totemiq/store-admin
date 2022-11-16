@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import React from "react"
+import Spinner from "../../atoms/spinner"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -12,20 +13,6 @@ type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   forceDropdown?: boolean
   actions?: ActionType[]
   linkTo?: string
-}
-
-type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
-  title: string
-  currentPage: number
-  pageSize: number
-  count: number
-  offset: number
-  limit: number
-  pageCount: number
-  nextPage: () => void
-  prevPage: () => void
-  hasNext: boolean
-  hasPrev: boolean
 }
 
 type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
@@ -61,8 +48,6 @@ type TableType = {
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
   Cell: TableElement<TableCellProps>
-  Pagination: React.ForwardRefExoticComponent<TablePaginationProps> &
-    React.RefAttributes<unknown>
 } & TableElement<TableProps>
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
@@ -99,7 +84,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
             <span aria-hidden />
           )}
           <div className="flex items-center">
-            {tableActions && <div className="mr-small">{tableActions}</div>}
+            {tableActions && <div>{tableActions}</div>}
             {enableSearch && (
               <TableSearch
                 autoFocus={immediateSearchFocus}
@@ -110,13 +95,15 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
             )}
           </div>
         </div>
-        <table
-          ref={ref}
-          className={clsx("w-full table-auto", className)}
-          {...props}
-        >
-          {children}
-        </table>
+        <div className="relative">
+          <table
+            ref={ref}
+            className={clsx("w-full table-auto", className)}
+            {...props}
+          >
+            {children}
+          </table>
+        </div>
       </div>
     )
   }
@@ -253,56 +240,5 @@ Table.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     </tr>
   )
 )
-
-export const TablePagination = ({
-  className,
-  title = "Elements",
-  currentPage,
-  pageCount,
-  pageSize,
-  count,
-  offset,
-  nextPage,
-  prevPage,
-  hasNext,
-  hasPrev,
-}: TablePaginationProps) => {
-  const soothedOffset = count > 0 ? offset + 1 : 0
-  const soothedPageCount = Math.max(1, pageCount)
-
-  return (
-    <div
-      className={clsx(
-        "flex w-full justify-between inter-small-regular text-grey-50 mt-14",
-        className
-      )}
-    >
-      <div>{`${soothedOffset} - ${pageSize} of ${count} ${title}`}</div>
-      <div className="flex space-x-4">
-        <div>{`${currentPage} of ${soothedPageCount}`}</div>
-        <div className="flex space-x-4 items-center">
-          <div
-            className={clsx(
-              { ["text-grey-30"]: !hasPrev },
-              { ["cursor-pointer"]: hasPrev }
-            )}
-            onClick={() => prevPage()}
-          >
-            <ArrowLeftIcon />
-          </div>
-          <div
-            className={clsx(
-              { ["text-grey-30"]: !hasNext },
-              { ["cursor-pointer"]: hasNext }
-            )}
-            onClick={() => nextPage()}
-          >
-            <ArrowRightIcon />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default Table

@@ -1,7 +1,7 @@
 import React from "react"
 import Button from "../../fundamentals/button"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import CurrencyInput from "../../organisms/currency-input"
+import { AmountInput } from "../amount-input"
 
 type RMAShippingPriceProps = {
   inclTax: boolean
@@ -21,22 +21,16 @@ const RMAShippingPrice: React.FC<RMAShippingPriceProps> = ({
   setUseCustomShippingPrice,
 }) => {
   return useCustomShippingPrice ? (
-    <div className="flex items-center mt-4">
-      <CurrencyInput
-        readOnly
-        size="small"
-        currentCurrency={currencyCode}
-        className="w-full"
-      >
-        <CurrencyInput.AmountInput
-          label={`Amount (${inclTax ? "incl." : "excl."} tax)`}
-          amount={shippingPrice}
-          onChange={updateShippingPrice}
-        />
-      </CurrencyInput>
+    <div className="flex items-end mt-4 gap-x-base w-full">
+      <AmountInput
+        label={`Shipping price (${inclTax ? "incl. tax" : "excl. tax"})`}
+        currencyCode={currencyCode}
+        onChange={(amount) => updateShippingPrice(amount ?? 0)}
+        value={shippingPrice}
+      />
       <Button
         onClick={() => setUseCustomShippingPrice(false)}
-        className="w-8 h-8 ml-8 text-grey-40"
+        className="w-10 h-10 text-grey-40"
         variant="ghost"
         size="small"
       >

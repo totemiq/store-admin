@@ -1,14 +1,14 @@
-import * as React from "react"
 import { Product } from "@medusajs/medusa"
-import { Column, HeaderGroup, Row } from "react-table"
-import Table from "../../molecules/table"
-import ImagePlaceholderIcon from "../../fundamentals/icons/image-placeholder-icon"
-import { decideStatus } from "../collection-product-table/utils"
 import clsx from "clsx"
+import * as React from "react"
+import { Column, HeaderGroup, Row } from "react-table"
+import ImagePlaceholder from "../../fundamentals/image-placeholder"
+import Table from "../../molecules/table"
+import { decideStatus } from "../collection-product-table/utils"
 
 export const columns: Column<Product>[] = [
   {
-    Header: <Table.HeadCell className="pl-4">Product Details</Table.HeadCell>,
+    Header: <div className="pl-4">Product Details</div>,
     accessor: "title",
     Cell: ({ row: { original } }) => (
       <div className="pl-4 flex items-center w-[400px]">
@@ -19,9 +19,7 @@ export const columns: Column<Product>[] = [
               className="h-full object-cover rounded-soft"
             />
           ) : (
-            <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-10">
-              <ImagePlaceholderIcon size={16} />
-            </div>
+            <ImagePlaceholder />
           )}
         </div>
         <div className="flex flex-col">
@@ -36,7 +34,7 @@ export const columns: Column<Product>[] = [
     ),
   },
   {
-    Header: <Table.HeadCell>Status</Table.HeadCell>,
+    Header: <div>Status</div>,
     accessor: "status",
     Cell: ({ cell: { value } }) => (
       <Table.Cell className="w-[10%] pr-base">
@@ -45,11 +43,7 @@ export const columns: Column<Product>[] = [
     ),
   },
   {
-    Header: (
-      <Table.HeadCell className="flex justify-end items-center pr-4">
-        Variants
-      </Table.HeadCell>
-    ),
+    Header: <div className="flex justify-end items-center pr-4">Variants</div>,
     accessor: "variants",
     Cell: ({ row: { original } }) => (
       <Table.Cell className="flex justify-end items-center pr-4">

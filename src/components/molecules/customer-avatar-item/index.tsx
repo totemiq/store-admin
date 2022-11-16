@@ -3,37 +3,30 @@ import Avatar from "../../atoms/avatar"
 
 type CustomerAvatarItemProps = {
   color?: string
-  customer: any
-}
-
-const getInitial = (
-  firstName: string,
-  lastName: string,
-  email: string
-): string => {
-  return (
-    firstName?.charAt(0)?.toUpperCase() ||
-    lastName?.charAt(0)?.toUpperCase() ||
-    email?.charAt(0)?.toUpperCase() ||
-    ""
-  )
+  customer: {
+    first_name?: string
+    last_name?: string
+    email: string
+  }
 }
 
 const CustomerAvatarItem: React.FC<CustomerAvatarItemProps> = ({
   color = "bg-violet-60",
   customer,
 }: CustomerAvatarItemProps) => {
-  const fullName =
+  const identifier =
     customer.first_name || customer.last_name
       ? `${customer.first_name} ${customer.last_name}`
+      : customer.email
+      ? customer.email
       : "-"
 
   return (
-    <div className="flex items-center px-2.5 py-1.5 w-full">
+    <div className="flex items-center py-1.5 w-full">
       <div className="w-[24px] h-[24px]">
         <Avatar user={customer} color={color} />
       </div>
-      <span className="pl-2.5 w-40 truncate">{fullName}</span>
+      <span className="pl-2.5 w-40 truncate">{identifier}</span>
     </div>
   )
 }

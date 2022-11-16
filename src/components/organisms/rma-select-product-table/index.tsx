@@ -1,17 +1,17 @@
 import { LineItem, Order } from "@medusajs/medusa"
 import clsx from "clsx"
-import React, { useContext } from "react"
+import React, { Fragment, useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
 import Medusa from "../../../services/api"
 import { isLineItemCanceled } from "../../../utils/is-line-item"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import CopyToClipboard from "../../atoms/copy-to-clipboard"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
-import CopyToClipboard from "../../atoms/copy-to-clipboard"
 
 type RMASelectProductTableProps = {
   order: Omit<Order, "beforeInsert">
@@ -110,12 +110,14 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
 
   return (
     <Table>
-      <Table.HeadRow className="text-grey-50 inter-small-semibold">
-        <Table.HeadCell colSpan={2}>Product Details</Table.HeadCell>
-        <Table.HeadCell className="text-right pr-8">Quantity</Table.HeadCell>
-        <Table.HeadCell className="text-right">Refundable</Table.HeadCell>
-        <Table.HeadCell></Table.HeadCell>
-      </Table.HeadRow>
+      <Table.Head className="border-none">
+        <Table.HeadRow className="text-grey-50 inter-small-semibold">
+          <Table.HeadCell colSpan={2}>Product Details</Table.HeadCell>
+          <Table.HeadCell className="text-right pr-8">Quantity</Table.HeadCell>
+          <Table.HeadCell className="text-right">Refundable</Table.HeadCell>
+          <Table.HeadCell></Table.HeadCell>
+        </Table.HeadRow>
+      </Table.Head>
       <Table.Body>
         {allItems.map((item) => {
           // Only show items that have not been returned,
@@ -128,7 +130,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
           }
           const checked = item.id in toReturn
           return (
-            <>
+            <Fragment key={item.id}>
               <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
                 <Table.Cell>
                   <div className="items-center ml-1 h-full flex">
@@ -169,10 +171,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                           <span>{item.variant.title}</span>
                         )}
                         {item?.variant?.sku && (
-                            <CopyToClipboard
-                              value={item.variant.sku}
-                              iconSize={14}
-                            />
+                          <CopyToClipboard
+                            value={item.variant.sku}
+                            iconSize={14}
+                          />
                         )}
                       </div>
                     </div>
@@ -267,7 +269,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   </Table.Cell>
                 </Table.Row>
               )}
-            </>
+            </Fragment>
           )
         })}
       </Table.Body>

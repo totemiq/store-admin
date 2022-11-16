@@ -18,7 +18,7 @@ const ResendModal: React.FC<ResendModalProps> = ({
   email,
   handleCancel,
 }) => {
-  const resendNotification = useAdminResendNotification(notificationId)
+  const { mutate, isLoading } = useAdminResendNotification(notificationId)
 
   const { register, handleSubmit } = useForm({
     defaultValues: { to: email },
@@ -27,7 +27,7 @@ const ResendModal: React.FC<ResendModalProps> = ({
   const notification = useNotification()
 
   const handleResend = (data) => {
-    resendNotification.mutate(
+    mutate(
       {
         to: data.to.trim(),
       },
@@ -59,8 +59,7 @@ const ResendModal: React.FC<ResendModalProps> = ({
                   label={"Email"}
                   type="text"
                   placeholder={"Email"}
-                  name={`to`}
-                  ref={register({
+                  {...register(`to`, {
                     required: "Must be filled",
                   })}
                 />
@@ -83,6 +82,8 @@ const ResendModal: React.FC<ResendModalProps> = ({
                   className="w-32 text-small justify-center"
                   variant="primary"
                   type="submit"
+                  disabled={isLoading}
+                  loading={isLoading}
                 >
                   Send
                 </Button>

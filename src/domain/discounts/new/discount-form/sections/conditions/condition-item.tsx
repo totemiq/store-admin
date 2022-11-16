@@ -208,7 +208,6 @@ const ConditionItem = <Type extends DiscountConditionType>({
                     type,
                     items: [],
                     operator: DiscountConditionOperator.IN,
-                    shouldDelete: true,
                   }),
                 icon: <TrashIcon size={16} />,
                 variant: "danger",
