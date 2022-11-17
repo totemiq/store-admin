@@ -3,7 +3,7 @@ name: "Build image, push to custom registry, deploy to Caprover"
 on:
   push:
     branches:
-      - main
+      - master
 
 
 env:
@@ -32,8 +32,7 @@ jobs:
             latest=true
           tags: |
             type=sha,format=long,prefix=sha-
-            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/dev' }}
-            type=raw,value=stable,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=stable,enable=${{ github.ref == 'refs/heads/master' }}
 
       - name: Build and push
         id: docker_build
@@ -50,7 +49,7 @@ jobs:
   deploy-caprover-production:
     runs-on: ubuntu-20.04
     needs: [build-push-registry]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     name: "[Production] Deploy to Caprover"
     steps:
       - name: Deploy to Caprover
