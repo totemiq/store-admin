@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+
 env:
   IMAGE_REPO: registry.minsky.cc/minskylab/totemiq/store-admin
 jobs:
@@ -43,6 +44,8 @@ jobs:
           push: true
           labels: ${{ steps.docker_meta.outputs.labels }}
           tags: ${{ steps.docker_meta.outputs.tags }}
+
+
 
   deploy-caprover-production:
     runs-on: ubuntu-20.04
